@@ -7,6 +7,7 @@
 
 # Define the path to the broker.conf file
 BROKER_CONF_FILE="/home/rocketmq/broker.conf"
+#NETWORK_INTERFACE="railnet0"
 
 # --- Function to get the container's IPv6 address ---
 # This function attempts to find a global unicast IPv6 address
@@ -18,13 +19,20 @@ get_ipv6_address() {
   # 'cut -d/ -f1' removes the CIDR suffix (e.g., /64).
   # 'grep -v fe80' excludes link-local addresses.
   # 'head -n 1' takes only the first found address.
-  ip -6 addr show eth0 | \
+  ip -6 addr show $NETWORK_INTERFACE | \
     grep inet6 | \
     awk '{print $2}' | \
     cut -d/ -f1 | \
     grep -v fe80 | \
     head -n 1
 }
+
+if [ -z "$NETWORK_INTERFACE" ]; then
+  echo "Error: NETWORK_INTERFACE environment variable is not set. Using default value."
+  NETWORK_INTERFACE="railnet0"
+else
+  echo "NETWORK_INTERFACE environment variable found: $NETWORK_INTERFACE"
+fi
 
 # Fetch the IPv6 address
 IP_ADDRESS=$(get_ipv6_address)
