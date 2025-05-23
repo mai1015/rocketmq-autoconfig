@@ -82,7 +82,3 @@ fi
 
 echo "New content of broker.conf:"
 cat "$BROKER_CONF_FILE"
-
-# Start the broker
-echo "Starting the broker..."
-/home/rocketmq/bin/mqbroker -c $BROKER_CONF_FILE
