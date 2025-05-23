@@ -10,9 +10,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  DOCKERHUB_REGISTRY: 
-  IMAGE_NAME: ${{ github.repository }}
-  DOCKERHUB_USERNAME: mai1015
+  IMAGE_NAME: mai1015/rocketmq-autoconfig
 
 jobs:
   build-and-push:
@@ -32,7 +30,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ vars.REGISTRY }}
+          registry: ${{ env.REGISTRY }}
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -40,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -55,5 +53,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
