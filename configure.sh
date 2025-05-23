@@ -46,7 +46,7 @@ fi
 
 # Fetch the broker name from the environment variable
 if [ -z "$BROKERNAME" ]; then
-  echo "Error: BROKERNAME environment variable is not set. Using default value."
+  #echo "Error: BROKERNAME environment variable is not set. Using default value."
   # add borker- prefix to the machine name
   BROKERNAME="broker-$(hostname)"  # Default value if not set
 else
@@ -61,9 +61,7 @@ if [ ! -f "$BROKER_CONF_FILE" ]; then
 fi
 
 # Use sed to replace the placeholder with the fetched IPv6 address
-# The 'i' flag with '' (empty string) is for in-place editing that works on both macOS and Linux.
-# It targets the line starting with 'brokerIP1 = <IPADDRESS>'
-sed -i '' "s/^brokerIP1 = <IPADDRESS>/brokerIP1 = $IP_ADDRESS/" "$BROKER_CONF_FILE"
+sed -i "s/^brokerIP1 = <IPADDRESS>/brokerIP1 = $IP_ADDRESS/" "$BROKER_CONF_FILE"
 
 if [ $? -eq 0 ]; then
   echo "Successfully updated brokerIP1 to $IP_ADDRESS in $BROKER_CONF_FILE"
@@ -73,8 +71,7 @@ else
 fi
 
 # Update brokerName using the BROKERNAME environment variable
-# This now specifically targets the '<BROKERNAME>' placeholder.
-sed -i '' "s/^brokerName = <BROKERNAME>/brokerName = $BROKERNAME/" "$BROKER_CONF_FILE"
+sed -i "s/^brokerName = <BROKERNAME>/brokerName = $BROKERNAME/" "$BROKER_CONF_FILE"
 
 if [ $? -eq 0 ]; then
   echo "Successfully updated brokerName to $BROKERNAME in $BROKER_CONF_FILE"
@@ -85,3 +82,7 @@ fi
 
 echo "New content of broker.conf:"
 cat "$BROKER_CONF_FILE"
+
+# Start the broker
+echo "Starting the broker..."
+/home/rocketmq/bin/mqbroker -c $BROKER_CONF_FILE
